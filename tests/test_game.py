@@ -1,4 +1,7 @@
 import unittest
+import sys
+sys.path.append("..")  
+
 from map import MazeMap
 from player import Player
 from command import CommandHandler
