@@ -1,0 +1,47 @@
+openapi: 3.0.0
+info:
+  title: 迷宫游戏 API 接口文档
+  description: 随机迷宫游戏前后端交互接口
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:5000
+    description: 本地开发服务器
+
+paths:
+  /api/generate-maze:
+    get:
+      summary: 生成新的随机迷宫
+      description: 生成一个随机复杂迷宫，并返回迷宫数据、玩家初始位置、总钥匙数量
+      responses:
+        '200':
+          description: 成功生成迷宫
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  maze:
+                    type: object
+                  total_keys:
+                    type: integer
+
+  /api/move-player/{direction}:
+    get:
+      summary: 玩家移动
+      parameters:
+        - name: direction
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [w,a,s,d]
+      responses:
+        '200':
+          description: 移动结果
+
+  /api/check-win:
+    get:
+      summary: 检查是否通关（集齐所有钥匙）
+      responses:
+        '200':
+          description: 返回是否胜利
