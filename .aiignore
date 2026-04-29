@@ -1,0 +1,14 @@
+# .aiignore - AI 助手禁止修改的文件
+
+# 核心配置（改坏整个游戏会崩）
+constants.py
+
+# 文档（避免 AI 覆盖人工内容）
+AGENTS.md
+README.md
+
+# 测试基线（改坏会导致测试失效）
+tests/test_game.py
+
+# GitHub Actions 工作流
+.github/workflows/*.yml
