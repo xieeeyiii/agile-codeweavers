@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>迷宫游戏 </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎮 迷宫游戏:寻🔑</h1>
+        <div class="game-info">
+            <p>操作：W(上) A(左) S(下) D(右) | 
+               <button id="new-maze-btn">生成新迷宫</button> | 
+               背包：<span id="inventory">0</span> 把钥匙
+            </p>
+            <p id="status">点击「生成新迷宫」开始游戏！</p>
+        </div>
+        <!-- 迷宫容器（自适应屏幕） -->
+        <div class="maze-container" id="maze-container"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
