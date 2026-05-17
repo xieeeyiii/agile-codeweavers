@@ -1,0 +1,70 @@
+openapi: 3.0.3
+info:
+  title: Maze Game API
+  description: Sprint3 OpenAPI Specification
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+paths:
+  /game/start:
+    post:
+      summary: Start a new game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: player1
+      responses:
+        '200':
+          description: Game started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mapData:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: string
+                  playerPos:
+                    type: object
+                  inventory:
+                    type: array
+
+  /player/move:
+    post:
+      summary: Move player
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                direction:
+                  type: string
+                  enum: [w, a, s, d]
+      responses:
+        '200':
+          description: Move result
+
+  /player/inventory:
+    get:
+      summary: Show player inventory
+      responses:
+        '200':
+          description: Return items
+
+  /game/help:
+    get:
+      summary: Show help
+      responses:
+        '200':
+          description: Return help info
