@@ -1,36 +1,51 @@
-name: Python CI Build & Test
+
+name: CI/CD Pipeline
 
 on:
+  push:
+    branches: [main, master]
   pull_request:
-    branches: [ develop ]
+    branches: [main, master]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.9"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest
-
-      - name: Create empty requirements.txt (if missing)
-        run: |
-          if [ ! -f requirements.txt ]; then touch requirements.txt; fi
-
-      - name: Check Python syntax
-        run: |
-          python -m py_compile *.py
-
-      - name: Run simple test
-        run: |
-          echo "def test_ok(): assert True" > test_ci.py
-          pytest test_ci.py -v
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r backend/requirements.txt
+        pip install flask flask-cors pytest requests
+    
+    - name: Start Flask backend
+      run: |
+        cd backend
+        python app.py &
+        sleep 5
+      shell: bash
+    
+    - name: Wait for backend to be ready
+      run: |
+        for i in {1..10}; do
+          if curl -s http://localhost:5000/api/generate-maze > /dev/null; then
+            echo "Backend is ready"
+            exit 0
+          fi
+          echo "Waiting for backend... $i"
+          sleep 2
+        done
+        echo "Backend failed to start"
+        exit 1
+      shell: bash
+    
+    - name: Run API Integration Tests
+      run: |
+        cd backend
+        python -m pytest test_api.py -v
