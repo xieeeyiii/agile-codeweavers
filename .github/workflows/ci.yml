@@ -1,0 +1,35 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r backend/requirements.txt
+    
+    - name: Start Flask backend
+      run: |
+        cd backend
+        python app.py &
+        sleep 3
+      shell: bash
+    
+    - name: Run API Integration Tests
+      run: |
+        cd backend
+        pytest test_api.py -v

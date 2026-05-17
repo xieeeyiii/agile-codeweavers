@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>迷宫探险 - 游戏中</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="game-page">
+    <!-- 游戏主容器 -->
+    <div class="game-wrapper">
+        <!-- 顶部状态栏 -->
+        <header class="game-header">
+            <button class="back-btn" id="back-btn" title="返回主菜单">
+                ← 返回
+            </button>
+            <div class="game-title-bar">
+                <span class="title-icon">🐱</span>
+                <span>迷宫探险</span>
+                <span class="title-icon">🔑</span>
+            </div>
+            <div class="key-display">
+                <span class="key-icon-small">🔑</span>
+                <span class="key-count" id="inventory">0</span>
+                <span class="key-sep">/</span>
+                <span class="key-total" id="total-keys">0</span>
+            </div>
+        </header>
+
+        <!-- 主要游戏区域 -->
+        <main class="game-main-flex">
+            <!-- 迷宫画布区（自适应大小） -->
+            <div class="maze-canvas-container">
+                <div class="maze-wrapper" id="maze-wrapper">
+                    <canvas id="maze-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- 右侧信息面板（紧凑） -->
+            <aside class="game-sidebar">
+                <div class="progress-section">
+                    <div class="progress-label">
+                        <span>🔑 收集进度</span>
+                        <span id="progress-text">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="status-card">
+                    <div class="status-icon">📢</div>
+                    <div class="status-message" id="status">
+                        点击「新游戏」开始
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="new-game-btn" class="action-btn primary">
+                        🗺️ 新游戏
+                    </button>
+                    <button id="reset-game-btn" class="action-btn secondary">
+                        🔄 重置
+                    </button>
+                </div>
+
+                <div class="controls-card">
+                    <div class="controls-title">🎮 操作</div>
+                    <div class="controls-grid">
+                        <div class="control-item"><kbd>W</kbd> 上</div>
+                        <div class="control-item"><kbd>S</kbd> 下</div>
+                        <div class="control-item"><kbd>A</kbd> 左</div>
+                        <div class="control-item"><kbd>D</kbd> 右</div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- 底部提示 -->
+        <footer class="game-footer-bar">
+            💡 提示：需要集齐所有🔑钥匙才能通过🚩终点
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
