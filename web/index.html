@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>迷宫游戏 Web UI 完整版</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app" style="text-align:center; margin:30px;">
+  <h2>MUD 迷宫游戏 - Web 图形版</h2>
+  <p><b>位置：</b> X={{ x }}  Y={{ y }}</p>
+  <p><b>背包：</b>{{ inventory.join(', ') || '空' }}</p>
+  <h2 style="color:red;">{{ message }}</h2>  <!-- 这里现在会显示提示！！ -->
+
+  <canvas ref="canvas" width="300" height="300" style="border:3px solid #000;"></canvas>
+
+  <div style="margin:20px;">
+    <button @click="go('w')">↑</button>
+    <button @click="go('a')">←</button>
+    <button @click="go('s')">↓</button>
+    <button @click="go('d')">→</button>
+    <button @click="sendCmd('help')">帮助</button>
+    <button @click="sendCmd('inventory')">背包</button>
+    <button @click="reset()">重置</button>
+  </div>
+</div>
+
+<script>
+const { createApp, ref, onMounted } = Vue
+const api = axios.create({ baseURL: 'http://127.0.0.1:5000' })
+
+createApp({
+  setup() {
+    const canvas = ref(null)
+    const x = ref(1)
+    const y = ref(1)
+    const inventory = ref([])
+    const mapData = ref([])
+    const message = ref("游戏开始！")
+
+    const init = async () => {
+      const res = await api.get('/api/game/init')
+      mapData.value = res.data.map
+      x.value = res.data.player.x
+      y.value = res.data.player.y
+      inventory.value = res.data.inventory
+      message.value="游戏开始！"
+      draw()
+    }
+
+    const draw = () => {
+      const ctx = canvas.value.getContext('2d')
+      const size = 40
+      ctx.clearRect(0,0,300,300)
+
+      for (let yy=0; yy<5; yy++) {
+        for (let xx=0; xx<5; xx++) {
+          const cell = mapData.value[yy][xx]
+
+          if (cell === '#') ctx.fillStyle='#333'
+          else if (cell === 'K') ctx.fillStyle='#ffeb3b'
+          else if (cell === 'G') ctx.fillStyle='#4caf50'
+          else ctx.fillStyle='#fff'
+
+          ctx.fillRect(xx*size, yy*size, size, size)
+          ctx.strokeRect(xx*size, yy*size, size, size)
+
+          ctx.fillStyle='#000'
+          ctx.font='18px Arial'
+          ctx.textAlign='center'
+          if (cell==='K') ctx.fillText('K', xx*size+20, yy*size+25)
+          if (cell==='G') ctx.fillText('G', xx*size+20, yy*size+25)
+        }
+      }
+
+      ctx.fillStyle='#f44336'
+      ctx.fillRect(x.value*size, y.value*size, size, size)
+    }
+
+    const sendCmd = async (cmd) => {
+      const res = await api.post('/api/game/command', { cmd })
+      x.value = res.data.player.x
+      y.value = res.data.player.y
+      inventory.value = res.data.inventory
+      mapData.value = res.data.map
+
+      // ======================
+      // 关键：自动判断是否到达终点、撞墙、捡钥匙
+      // ======================
+      const cell = mapData.value[y.value][x.value]
+      if (cell === "G") {
+        message.value = "🎉 恭喜你到达终点，游戏胜利！"
+      } else if (cell === "K") {
+        message.value = "✅ 你捡到了钥匙！"
+      } else if (cmd === "help") {
+        message.value = "帮助：WASD移动 inventory查看背包"
+      } else if (cmd === "inventory") {
+        message.value = "查看背包"
+      } else {
+        message.value = "移动成功"
+      }
+
+      draw()
+    }
+
+    const go = (dir) => sendCmd(dir)
+    const reset = async () => {
+      await api.post('/api/game/reset')
+      init()
+      message.value = "游戏已重置"
+    }
+
+    onMounted(() => {
+      init()
+      window.onkeydown = e => {
+        if(['w','a','s','d'].includes(e.key)) go(e.key)
+      }
+    })
+
+    return { canvas, x, y, inventory, message, go, sendCmd, reset }
+  }
+}).mount('#app')
+</script>
+</body>
+</html>
